@@ -1,11 +1,15 @@
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'firebase_options.dart';
 import 'vision_detector_views/barcode_scanner_view.dart';
-
+import 'screens/log_in_form.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -44,10 +48,21 @@ class Home extends StatelessWidget {
                     height: 20,
                   ),
                   ElevatedButton(
-                    onPressed: () async {
-                      // await _signInAnonymously();
-                    },
-                    child: Text('Sign in anonymously'),
+                    onPressed: FirebaseAuth.instance.currentUser != null 
+                      ? () async {
+                          await FirebaseAuth.instance.signOut();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => Home()), // replace MainScreen with your main screen widget
+                          );;
+                        } 
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LogInForm()),
+                          );
+                        },
+                    child: Text(FirebaseAuth.instance.currentUser != null ? 'Log Out' : 'Log In'),
                   ),
                 ],
               ),
@@ -58,13 +73,9 @@ class Home extends StatelessWidget {
     );
   }
 }
-// Future<void> _signInAnonymously() async {
-//   try {
-//     await FirebaseAuth.instance.signInAnonymously();
-//   } catch (e) {
-//     print(e);
-//   }
-// }
+
+
+
 class CustomCard extends StatelessWidget {
   final String _label;
   final Widget _viewPage;
@@ -83,16 +94,6 @@ class CustomCard extends StatelessWidget {
           _label,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        onTap: () {
-          if (!featureCompleted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content:
-                    const Text('This feature has not been implemented yet')));
-          } else {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => _viewPage));
-          }
-        },
       ),
     );
   }

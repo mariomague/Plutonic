@@ -3,9 +3,9 @@
   "packages": [
     {
       "name": "_flutterfire_internals",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/_flutterfire_internals-1.0.2",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/_flutterfire_internals-1.3.16",
       "packageUri": "lib/",
-      "languageVersion": "2.16"
+      "languageVersion": "2.18"
     },
     {
       "name": "async",
@@ -62,18 +62,6 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "cloud_firestore_platform_interface",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-5.7.7",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "cloud_firestore_web",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-2.8.10",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
       "name": "collection",
       "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.18.0",
       "packageUri": "lib/",
@@ -81,9 +69,9 @@
     },
     {
       "name": "cross_file",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/cross_file-0.3.4+1",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/cross_file-0.3.3+8",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.2"
     },
     {
       "name": "fake_async",
@@ -123,39 +111,39 @@
     },
     {
       "name": "firebase_auth",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-3.11.2",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-4.16.0",
       "packageUri": "lib/",
-      "languageVersion": "2.16"
+      "languageVersion": "2.18"
     },
     {
       "name": "firebase_auth_platform_interface",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_platform_interface-6.10.1",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_platform_interface-7.0.9",
       "packageUri": "lib/",
-      "languageVersion": "2.16"
+      "languageVersion": "2.18"
     },
     {
       "name": "firebase_auth_web",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-4.6.1",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-5.8.13",
       "packageUri": "lib/",
-      "languageVersion": "2.16"
+      "languageVersion": "2.18"
     },
     {
       "name": "firebase_core",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core-1.24.0",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core-2.25.5",
       "packageUri": "lib/",
-      "languageVersion": "2.16"
+      "languageVersion": "2.18"
     },
     {
       "name": "firebase_core_platform_interface",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core_platform_interface-4.8.0",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core_platform_interface-5.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "firebase_core_web",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core_web-1.7.3",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core_web-2.11.5",
       "packageUri": "lib/",
-      "languageVersion": "2.16"
+      "languageVersion": "3.2"
     },
     {
       "name": "flutter",
@@ -165,9 +153,9 @@
     },
     {
       "name": "flutter_lints",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-2.0.3",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-3.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.0"
     },
     {
       "name": "flutter_plugin_android_lifecycle",
@@ -200,82 +188,10 @@
       "languageVersion": "2.16"
     },
     {
-      "name": "google_mlkit_digital_ink_recognition",
-      "rootUri": "../../google_mlkit_digital_ink_recognition",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_entity_extraction",
-      "rootUri": "../../google_mlkit_entity_extraction",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_face_detection",
-      "rootUri": "../../google_mlkit_face_detection",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_face_mesh_detection",
-      "rootUri": "../../google_mlkit_face_mesh_detection",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_image_labeling",
-      "rootUri": "../../google_mlkit_image_labeling",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_language_id",
-      "rootUri": "../../google_mlkit_language_id",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_object_detection",
-      "rootUri": "../../google_mlkit_object_detection",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_pose_detection",
-      "rootUri": "../../google_mlkit_pose_detection",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_selfie_segmentation",
-      "rootUri": "../../google_mlkit_selfie_segmentation",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_smart_reply",
-      "rootUri": "../../google_mlkit_smart_reply",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_text_recognition",
-      "rootUri": "../../google_mlkit_text_recognition",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
-      "name": "google_mlkit_translation",
-      "rootUri": "../../google_mlkit_translation",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
-    },
-    {
       "name": "http",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.2.1",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.2.0",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.2"
     },
     {
       "name": "http_parser",
@@ -332,12 +248,6 @@
       "languageVersion": "2.19"
     },
     {
-      "name": "intl",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/intl-0.17.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "js",
       "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/js-0.6.7",
       "packageUri": "lib/",
@@ -363,7 +273,7 @@
     },
     {
       "name": "lints",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/lints-2.1.1",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/lints-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -513,9 +423,9 @@
     },
     {
       "name": "web",
-      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/web-0.5.0",
+      "rootUri": "file:///C:/Users/mario/AppData/Local/Pub/Cache/hosted/pub.dev/web-0.4.2",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.2"
     },
     {
       "name": "win32",
@@ -536,7 +446,7 @@
       "languageVersion": "2.15"
     }
   ],
-  "generated": "2024-03-05T09:29:23.100243Z",
+  "generated": "2024-03-05T11:24:36.564486Z",
   "generator": "pub",
   "generatorVersion": "3.3.0"
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "318769371927",
+    "project_id": "plutonic-0000",
+    "storage_bucket": "plutonic-0000.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:318769371927:android:99819d3815a20f36b9b552",
+        "android_client_info": {
+          "package_name": "com.google_mlkit_example"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYVUwJXWvG1bEQASScRIn97k0ju8cUVz4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
