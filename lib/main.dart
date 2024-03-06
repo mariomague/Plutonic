@@ -1,9 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'screens/product_list_screen.dart'; 
+import 'screens/group_screen.dart'; 
+import 'screens/account_screen.dart';
 import 'firebase_options.dart';
-import 'vision_detector_views/barcode_scanner_view.dart';
-import 'screens/log_in_form.dart';
+import 'screens/barcode_scanner_view_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,12 +19,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Home(),
+      home: HomeScreen(),
     );
   }
 }
 
-class Home extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+  final PageController _pageController = PageController(initialPage: 0);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,69 +41,60 @@ class Home extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  CustomCard('Add Product', BarcodeScannerView(isAddingProduct: true)),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  CustomCard('Remove Product', BarcodeScannerView(isAddingProduct: false)),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: FirebaseAuth.instance.currentUser != null 
-                      ? () async {
-                          await FirebaseAuth.instance.signOut();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => Home()), // replace MainScreen with your main screen widget
-                          );;
-                        } 
-                      : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => LogInForm()),
-                          );
-                        },
-                    child: Text(FirebaseAuth.instance.currentUser != null ? 'Log Out' : 'Log In'),
-                  ),
-                ],
-              ),
-            ),
+      body: PageView(
+        controller: _pageController,
+        children: [
+          BarcodeScannerViewScreen(),
+          ProductListScreen(),
+          GroupScreen(),
+          AccountScreen(
+            onLogout: () {
+              // Esta función se llamará cuando se cierre la sesión en AccountScreen
+              setState(() {}); // Actualiza el estado para reconstruir la pantalla
+            },
           ),
-        ),
+        ],
+        onPageChanged: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.black,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.barcode_scanner,color: Colors.black),
+            label: 'Scan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt_outlined,color: Colors.black),
+            label: 'List',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group_outlined,color: Colors.black),
+            label: 'Group',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_outlined,color: Colors.black),
+            label: 'Account',
+          ),
+        ],
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+            _pageController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+          });
+        },
       ),
     );
   }
-}
-
-
-
-class CustomCard extends StatelessWidget {
-  final String _label;
-  final Widget _viewPage;
-  final bool featureCompleted;
-
-  const CustomCard(this._label, this._viewPage, {this.featureCompleted = true});
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      margin: EdgeInsets.only(bottom: 10),
-      child: ListTile(
-        tileColor: Theme.of(context).primaryColor,
-        title: Text(
-          _label,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 }
+
