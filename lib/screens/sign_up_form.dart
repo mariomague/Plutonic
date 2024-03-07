@@ -65,6 +65,10 @@ class _RegisterFormState extends State<RegisterForm> {
       // Referencia a la colección de usuarios
       CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
       
+      print(usersCollection);
+      print(FirebaseFirestore.instance.collection('users'));
+
+
       // Guardar información del usuario en Firestore
       await usersCollection.doc(userId).set({
         'email': email,

@@ -69,15 +69,15 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Scan',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt_outlined,color: Colors.black),
+            icon: Icon(Icons.list_alt,color: Colors.black),
             label: 'List',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group_outlined,color: Colors.black),
+            icon: Icon(Icons.group,color: Colors.black),
             label: 'Group',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle_outlined,color: Colors.black),
+            icon: Icon(Icons.account_circle,color: Colors.black),
             label: 'Account',
           ),
         ],

@@ -21,8 +21,7 @@ dependencies:
 
   google_mlkit_commons:
 #    path: ../google_mlkit_commons
-  google_mlkit_barcode_scanning:
-    path: ../google_mlkit_barcode_scanning
+  google_mlkit_barcode_scanning: ^0.10.0
   firebase_auth: ^4.16.0
   firebase_core_platform_interface: ^5.0.0
   firebase_auth_platform_interface: ^7.0.9
