@@ -9,7 +9,7 @@ class GroupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Group'),
+        title: Text('Warehouses & Groups'),
         actions: [
           if (FirebaseAuth.instance.currentUser != null)
             IconButton(

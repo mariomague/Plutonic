@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class StoreOptionsScreen extends StatelessWidget {
@@ -19,12 +20,14 @@ class StoreOptionsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () {
-                _deleteStore(context);
-              },
+              onPressed: () => _deleteStore(context),
               child: Text('Delete Store'),
             ),
-            // Add more options as needed
+            const SizedBox(height: 16.0), // Add spacing between buttons
+            ElevatedButton(
+              onPressed: () => _selectStore(context), // Implement _selectStore method
+              child: Text('Select Store'),
+            ),
           ],
         ),
       ),
@@ -56,7 +59,26 @@ class StoreOptionsScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete store. Please try again.')));
     }
   }
+  Future<void> _selectStore(BuildContext context) async {
+    // print('-------------------------------------------------------------------');
+    // print(storeReference.id);
+    // print('-------------------------------------------------------------------');
+  try {
+    // Get the SharedPreferences instance
+    final prefs = await SharedPreferences.getInstance();
 
+    // Store the store reference in SharedPreferences
+    await prefs.setString('currentStore', storeReference.id);
+
+    // Display a success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Store selected successfully!')),
+    );
+  } catch (error) {
+    print('Error selecting store: $error');
+    // Handle the error appropriately, e.g., display an error message to the user
+  }
+}
   Future<void> _deleteProductsCollection(CollectionReference productsCollection) async {
     QuerySnapshot querySnapshot = await productsCollection.get();
     for (DocumentSnapshot documentSnapshot in querySnapshot.docs) {

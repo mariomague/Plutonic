@@ -17,19 +17,23 @@ class _AddStoreState extends State<AddStore> {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       DocumentReference storeRef = FirebaseFirestore.instance.collection('stores').doc();
-      await storeRef.set({
-        'name': storeName,
-        'users': [FirebaseFirestore.instance.collection('users').doc(userId)], // Save user reference
-      });
 
-      // Add the store reference to the user's stores list
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'stores': FieldValue.arrayUnion([storeRef]),
-      });
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        // Create the store document
+        transaction.set(storeRef, {
+          'name': storeName,
+          'users': [FirebaseFirestore.instance.collection('users').doc(userId)], // Save user reference
+        });
 
-      // Create a 'products' subcollection under the store
-      await storeRef.collection('products').doc('placeholder').set({
-        'placeholder': true // Placeholder document to ensure the 'products' collection is created
+        // Add the store reference to the user's stores list
+        transaction.update(FirebaseFirestore.instance.collection('users').doc(userId), {
+          'stores': FieldValue.arrayUnion([storeRef]),
+        });
+
+        // Create and delete the placeholder document (atomic operation)
+        final productsRef = storeRef.collection('products').doc('placeholder');
+        transaction.set(productsRef, {'placeholder': true}); // Create placeholder
+        transaction.delete(productsRef); // Delete placeholder
       });
 
       Navigator.pop(context); // Go back to the previous screen

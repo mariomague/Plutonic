@@ -1,1 +1,0 @@
- C:\\Mario\\Clase\\Proyecto\\google_ml_kit_flutter-master\\packages\\example\\.dart_tool\\flutter_build\\f1ee571965f291d08380491e6655e58b\\native_assets.yaml: 

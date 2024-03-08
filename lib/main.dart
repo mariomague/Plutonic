@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'screens/product_list_screen.dart'; 
 import 'screens/group_screen.dart'; 
 import 'screens/account_screen.dart';
 import 'firebase_options.dart';
@@ -45,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: _pageController,
         children: [
           BarcodeScannerViewScreen(),
-          ProductListScreen(),
+          //ProductListScreen(), // Eliminado
           GroupScreen(),
           AccountScreen(
             onLogout: () {
@@ -68,10 +67,10 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.barcode_scanner,color: Colors.black),
             label: 'Scan',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt,color: Colors.black),
-            label: 'List',
-          ),
+          // BottomNavigationBarItem( // Eliminado
+          //   icon: Icon(Icons.list_alt,color: Colors.black),
+          //   label: 'List',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.group,color: Colors.black),
             label: 'Group',
@@ -97,4 +96,3 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 }
-
