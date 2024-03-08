@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class StoreOptionsScreen extends StatelessWidget {
   final DocumentReference storeReference;
 
@@ -35,6 +34,33 @@ class StoreOptionsScreen extends StatelessWidget {
   }
 
   Future<void> _deleteStore(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete this store?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await _performDelete(context);
+                Navigator.pop(context);
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _performDelete(BuildContext context) async {
     try {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot storeSnapshot = await transaction.get(storeReference);
@@ -59,32 +85,36 @@ class StoreOptionsScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete store. Please try again.')));
     }
   }
+
   Future<void> _selectStore(BuildContext context) async {
     // print('-------------------------------------------------------------------');
     // print(storeReference.id);
     // print('-------------------------------------------------------------------');
-  try {
-    // Get the SharedPreferences instance
-    final prefs = await SharedPreferences.getInstance();
+    try {
+      // Get the SharedPreferences instance
+      final prefs = await SharedPreferences.getInstance();
 
-    // Store the store reference in SharedPreferences
-    await prefs.setString('currentStore', storeReference.id);
+      // Store the store reference in SharedPreferences
+      await prefs.setString('currentStore', storeReference.id);
+      Navigator.pop(context); // Go back to the previous screen
 
-    // Display a success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Store selected successfully!')),
-    );
-  } catch (error) {
-    print('Error selecting store: $error');
-    // Handle the error appropriately, e.g., display an error message to the user
+      // Display a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Store selected successfully!')),
+      );
+    } catch (error) {
+      print('Error selecting store: $error');
+      // Handle the error appropriately, e.g., display an error message to the user
+    }
   }
-}
+
   Future<void> _deleteProductsCollection(CollectionReference productsCollection) async {
+    // we remove the store from shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('currentStore');
     QuerySnapshot querySnapshot = await productsCollection.get();
     for (DocumentSnapshot documentSnapshot in querySnapshot.docs) {
       await documentSnapshot.reference.delete();
     }
   }
-
-
 }

@@ -2,7 +2,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'detector_view.dart';
-// import 'painters/barcode_detector_painter.dart';
+import '../product_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BarcodeScannerView extends StatefulWidget {
   final bool isAddingProduct;
@@ -39,6 +40,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
       onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
     );
   }
+
   Future<void> _processImage(InputImage inputImage) async {
     if (!_canProcess) return;
     if (_isBusy) return;
@@ -48,46 +50,50 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     });
     final barcodes = await _barcodeScanner.processImage(inputImage);
     if (barcodes.isNotEmpty) {
-      _canProcess = false; // Stop processing images when a barcode is detected
+      _canProcess = false;
 
       if (widget.isAddingProduct) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Product Added'),
-            content: Text('Barcode: ${barcodes.first.rawValue}'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Close'),
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                  _canProcess = true; // Resume processing images when the dialog is closed
-                },
-              ),
-            ],
+        final prefs = await SharedPreferences.getInstance();
+        var storeId = prefs.getString('currentStore');
+        var productId = barcodes.removeAt(0).rawValue;
+
+        // Check if the last scanned productId matches the current one
+        var lastScannedProductId = prefs.getString('lastScannedProductId');
+        if (lastScannedProductId == productId) {
+          await prefs.remove('lastScannedProductId');
+          _canProcess = true;
+        } else {
+          // Save the current productId as the last scanned productId
+          await prefs.setString('lastScannedProductId', productId!);
+          addProduct(context, storeId, productId);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Product added successfully!')),
           );
-        },
-      );
+        Navigator.pop(context);
+        }
+
+        barcodes.clear();
       } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Product removed'),
-            content: Text('Barcode: ${barcodes.first.rawValue}'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Close'),
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                  _canProcess = true; // Resume processing images when the dialog is closed
-                },
-              ),
-            ],
+        final prefs = await SharedPreferences.getInstance();
+        var storeId = prefs.getString('currentStore');
+        var productId = barcodes.removeAt(0).rawValue;
+
+        // Check if the last scanned productId matches the current one
+        var lastScannedProductId = prefs.getString('lastScannedProductId');
+        if (lastScannedProductId == productId) {
+          await prefs.remove('lastScannedProductId');
+          _canProcess = true;
+        } else {
+          // Save the current productId as the last scanned productId
+          await prefs.setString('lastScannedProductId', productId!);
+          deleteProduct(storeId, productId);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Product removed successfully!')),
           );
-        },
-      );
+        Navigator.pop(context);
+        }
+
+        barcodes.clear();
       }
     }
     _isBusy = false;

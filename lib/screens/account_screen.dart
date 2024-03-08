@@ -2,10 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'log_in_form.dart';
 import 'sign_up_form.dart';
-class AccountScreen extends StatelessWidget {
+
+class AccountScreen extends StatefulWidget {
   final VoidCallback? onLogout;
 
   const AccountScreen({Key? key, this.onLogout}) : super(key: key);
+
+  @override
+  _AccountScreenState createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends State<AccountScreen> {
+  // ignore: unused_field
+  User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateUserInfo();
+  }
+
+  Future<void> _updateUserInfo() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    setState(() {
+      _user = currentUser;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +63,8 @@ class AccountScreen extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              onLogout?.call(); // Llama a la función proporcionada por el padre para actualizar la página
+              _updateUserInfo();
+              widget.onLogout?.call(); // Llama a la función proporcionada por el padre para actualizar la página
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -64,10 +87,7 @@ class AccountScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => RegisterForm()),
-                  );
-
-                  // Implement sign up action
-                  // RegisterForm
+                  ).then((_) => _updateUserInfo());
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -84,7 +104,7 @@ class AccountScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LogInForm()),
-                  );
+                  ).then((_) => _updateUserInfo());
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(

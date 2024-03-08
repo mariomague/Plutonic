@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../vision_detector_views/barcode_scanner_view.dart';
 import 'product_details_screen.dart';
@@ -15,7 +16,20 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
   @override
   void initState() {
     super.initState();
+    _clearUserDataIfNoUser();
     _getStoreIdFromPrefs();
+  }
+
+  Future<void> _clearUserDataIfNoUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.remove('userId');
+      prefs.remove('currentStore');
+      setState(() {
+        selectedStoreId = null;
+      });
+    }
   }
 
   Future<void> _getStoreIdFromPrefs() async {
@@ -26,8 +40,10 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (selectedStoreId == null) {
-      return Center(child: Text('Loading store...'));
+    if (FirebaseAuth.instance.currentUser == null) {
+      return Center(child: Text('Sign in to continue'));
+    }else if (selectedStoreId == null) {
+      return Center(child: Text('Select a store to continue'));
     }
 
     final storeRef = FirebaseFirestore.instance.collection('stores').doc(selectedStoreId);
@@ -86,11 +102,14 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
                         // Accede a la ID del producto
                         final productId = doc.id;
 
-                        // Accede al nombre del producto
-                        final productName = doc['name'];
+                        // Accede a los datos del documento como un mapa
+                        final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+                        // Accede al nombre del producto si existe, de lo contrario usa un valor predeterminado
+                        final productName = data.containsKey('name') ? data['name'] : 'Unnamed Product';
 
                         // Accede a la cantidad del producto
-                        final productQuantity = doc['quantity'];
+                        final productQuantity = data['quantity'];
 
                         return ListTile(
                           leading: Icon(Icons.category, color: Colors.blue),
@@ -107,6 +126,8 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
                           },
                         );
                       }).toList();
+
+
 
                       return ListView(
                         children: products,
