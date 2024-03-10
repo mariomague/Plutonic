@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../product_utils.dart';
+import 'dart:typed_data';
 
 class ProductDetailsScreen extends StatefulWidget {
   final String storeId;
@@ -15,6 +16,7 @@ class ProductDetailsScreen extends StatefulWidget {
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   bool _isEditing = false;
   late String _productName = '';
+  late Uint8List _imageBytes = Uint8List(0); // Nueva variable para almacenar los bytes de la imagen
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +41,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
           _productName = productData['name'] ?? '';
           final productQuantity = productData['quantity'] ?? 0;
+          if (productData.containsKey('image')) {
+            final imageList = productData['image'] as List<dynamic>;
+            _imageBytes = Uint8List.fromList(imageList.cast<int>());
+          }
 
           return Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (_imageBytes.isNotEmpty) // Mostrar la imagen si existen bytes
+                  Image.memory(_imageBytes), // Mostrar la imagen desde los bytes
                 _isEditing
                     ? TextField(
                         decoration: InputDecoration(labelText: 'Product Name', hintText: _productName),
