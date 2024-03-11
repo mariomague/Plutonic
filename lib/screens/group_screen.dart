@@ -56,7 +56,6 @@ class GroupScreen extends StatelessWidget {
 
               List<DocumentReference> storeReferences =
                   List<DocumentReference>.from(userData['stores']);
-
               if (storeReferences.isEmpty) {
                 return Center(child: Text('No stores associated with this user'));
               }
@@ -81,7 +80,13 @@ class GroupScreen extends StatelessWidget {
                         return SizedBox(); // Placeholder or error message
                       }
 
+      
+                      final bool isUserOwner = storeData.containsKey('users') &&
+                        (storeData['users'] as List<dynamic>).any((userRef) => userRef.id == authSnapshot.data!.uid);
+
+
                       return ListTile(
+                        leading: isUserOwner ? Icon(Icons.star) : null,
                         title: Text(storeData['name']),
                         onTap: () {
                           Navigator.push(

@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'log_in_form.dart';
 import 'sign_up_form.dart';
+import 'notifications_screen.dart'; // Importar la pantalla de notificaciones
 
 class AccountScreen extends StatefulWidget {
   final VoidCallback? onLogout;
+  final VoidCallback? onLogin;
 
-  const AccountScreen({Key? key, this.onLogout}) : super(key: key);
+  const AccountScreen({Key? key, this.onLogout, this.onLogin}) : super(key: key);
 
   @override
   _AccountScreenState createState() => _AccountScreenState();
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  
   // ignore: unused_field
   User? _user;
 
@@ -58,13 +61,12 @@ class _AccountScreenState extends State<AccountScreen> {
         _buildAccountInfo('Email', user?.email ?? 'You are not logged in.'),
         SizedBox(height: 20),
         Visibility(
-          // Show Log Out button when user is logged in
           visible: user != null,
           child: ElevatedButton(
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
               _updateUserInfo();
-              widget.onLogout?.call(); // Llama a la función proporcionada por el padre para actualizar la página
+              widget.onLogout?.call();
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -76,7 +78,6 @@ class _AccountScreenState extends State<AccountScreen> {
             child: Text('Log Out'),
           ),
         ),
-        // Show Log In and Sign Up buttons when user is not logged in
         Visibility(
           visible: user == null,
           child: Row(
@@ -87,7 +88,10 @@ class _AccountScreenState extends State<AccountScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => RegisterForm()),
-                  ).then((_) => _updateUserInfo());
+                  ).then((_) {
+                    _updateUserInfo();
+                    widget.onLogin?.call();
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -104,7 +108,10 @@ class _AccountScreenState extends State<AccountScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LogInForm()),
-                  ).then((_) => _updateUserInfo());
+                  ).then((_) {
+                    _updateUserInfo();
+                    widget.onLogin?.call();
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -116,6 +123,27 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: Text('Log In'),
               ),
             ],
+          ),
+        ),
+        SizedBox(height: 20), // Add space between buttons and the new notifications button
+        Visibility(
+          visible: user != null, // Show the notifications button only if the user is logged in
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+              textStyle: TextStyle(fontSize: 18),
+              backgroundColor: Colors.blue,
+            ),
+            child: Text('Notifications'),
           ),
         ),
       ],

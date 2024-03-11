@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../vision_detector_views/barcode_scanner_view.dart';
 import 'product_details_screen.dart';
+import 'dart:typed_data';
 
 class BarcodeScannerViewScreen extends StatefulWidget {
   @override
@@ -16,16 +17,26 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
   @override
   void initState() {
     super.initState();
-    _clearUserDataIfNoUser();
+    _clearUserDataIfBadUser();
     _getStoreIdFromPrefs();
   }
 
-  Future<void> _clearUserDataIfNoUser() async {
+  Future<void> _clearUserDataIfBadUser() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      final prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
+
+    // Verificar si el usuario actual es diferente al usuario almacenado en las preferencias compartidas
+    if (user == null || user.uid != prefs.getString('userId')) {
+      // Si el usuario actual es nulo o su UID es diferente al UID almacenado en las preferencias
+      // Remover los datos almacenados en las preferencias
       prefs.remove('userId');
       prefs.remove('currentStore');
+      if (user != null) {
+        // Si el usuario actual no es nulo, añadir a userId en las preferencias
+        prefs.setString('userId', user.uid);
+        
+      }
+      // Llamar a setState para actualizar la UI, en este caso, establecer selectedStoreId en null
       setState(() {
         selectedStoreId = null;
       });
@@ -42,7 +53,7 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
   Widget build(BuildContext context) {
     if (FirebaseAuth.instance.currentUser == null) {
       return Center(child: Text('Sign in to continue'));
-    }else if (selectedStoreId == null) {
+    } else if (selectedStoreId == null) {
       return Center(child: Text('Select a store to continue'));
     }
 
@@ -111,8 +122,12 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
                         // Accede a la cantidad del producto
                         final productQuantity = data['quantity'];
 
+                        // Accede a la lista de bytes de la imagen del producto si existe
+                        final imageList = data['image'] as List<dynamic>;
+                        final _imageBytes = Uint8List.fromList(imageList.cast<int>());
+
                         return ListTile(
-                          leading: Icon(Icons.category, color: Colors.blue),
+                          leading: Image.memory(_imageBytes),
                           title: Text(productName),
                           subtitle: Text('$productId - $productQuantity', style: TextStyle(color: Colors.grey)),
                           onTap: () {
@@ -126,8 +141,6 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
                           },
                         );
                       }).toList();
-
-
 
                       return ListView(
                         children: products,
