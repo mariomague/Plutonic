@@ -25,18 +25,12 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
     final user = FirebaseAuth.instance.currentUser;
     final prefs = await SharedPreferences.getInstance();
 
-    // Verificar si el usuario actual es diferente al usuario almacenado en las preferencias compartidas
     if (user == null || user.uid != prefs.getString('userId')) {
-      // Si el usuario actual es nulo o su UID es diferente al UID almacenado en las preferencias
-      // Remover los datos almacenados en las preferencias
       prefs.remove('userId');
       prefs.remove('currentStore');
       if (user != null) {
-        // Si el usuario actual no es nulo, añadir a userId en las preferencias
-        prefs.setString('userId', user.uid);
-        
+        prefs.setString('userId', user.uid);        
       }
-      // Llamar a setState para actualizar la UI, en este caso, establecer selectedStoreId en null
       setState(() {
         selectedStoreId = null;
       });
@@ -62,13 +56,10 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Camera preview (placeholder for BarcodeScannerView)
           Container(
-            // color: Colors.black, // Simulate camera preview
             width: double.infinity,
             height: double.infinity,
           ),
-          // Nombre de la tienda
           Positioned(
             top: 0,
             left: 0,
@@ -91,7 +82,6 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
               ),
             ),
           ),
-          // Contenido de la pantalla
           Padding(
             padding: const EdgeInsets.only(top: 50),
             child: Column(
@@ -108,30 +98,26 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
                         return Center(child: CircularProgressIndicator());
                       }
 
-                      // Convierte los documentos a una lista de widgets
                       final products = snapshot.data!.docs.map((doc) {
-                        // Accede a la ID del producto
                         final productId = doc.id;
-
-                        // Accede a los datos del documento como un mapa
                         final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-                        // Accede al nombre del producto si existe, de lo contrario usa un valor predeterminado
                         final productName = data.containsKey('name') ? data['name'] : 'Unnamed Product';
-
-                        // Accede a la cantidad del producto
                         final productQuantity = data['quantity'];
+                        final imageList = data['image'] as List<dynamic>?;
 
-                        // Accede a la lista de bytes de la imagen del producto si existe
-                        final imageList = data['image'] as List<dynamic>;
-                        final _imageBytes = Uint8List.fromList(imageList.cast<int>());
+                        Widget leadingWidget;
+                        if (imageList != null && imageList.isNotEmpty) {
+                          final _imageBytes = Uint8List.fromList(imageList.cast<int>());
+                          leadingWidget = Image.memory(_imageBytes);
+                        } else {
+                          leadingWidget = Icon(Icons.image);
+                        }
 
                         return ListTile(
-                          leading: Image.memory(_imageBytes),
+                          leading: leadingWidget,
                           title: Text(productName),
                           subtitle: Text('$productId - $productQuantity', style: TextStyle(color: Colors.grey)),
                           onTap: () {
-                            // Navega a la pantalla de detalles del producto
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -148,7 +134,6 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
                     },
                   ),
                 ),
-                // Action buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
