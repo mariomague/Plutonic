@@ -17,6 +17,30 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   bool _isEditing = false;
   late String _productName = '';
   late Uint8List _imageBytes = Uint8List(0); // Nueva variable para almacenar los bytes de la imagen
+  bool _imageLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Cargar la imagen al inicio
+    _loadImage();
+  }
+
+  // Método para cargar la imagen desde la base de datos
+  Future<void> _loadImage() async {
+    final productRef = FirebaseFirestore.instance.collection('stores/${widget.storeId}/products').doc(widget.productId);
+
+    final snapshot = await productRef.get();
+    final productData = snapshot.data() as Map<String, dynamic>?;
+
+    if (productData != null && productData.containsKey('image')) {
+      final imageList = productData['image'] as List<dynamic>;
+      _imageBytes = Uint8List.fromList(imageList.cast<int>());
+      setState(() {
+        _imageLoaded = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,55 +65,66 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
           _productName = productData['name'] ?? '';
           final productQuantity = productData['quantity'] ?? 0;
-          if (productData.containsKey('image')) {
-            final imageList = productData['image'] as List<dynamic>;
-            _imageBytes = Uint8List.fromList(imageList.cast<int>());
-          }
 
           return Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (_imageBytes.isNotEmpty) // Mostrar la imagen si existen bytes
-                  Image.memory(_imageBytes), // Mostrar la imagen desde los bytes
-                _isEditing
-                    ? TextField(
-                        decoration: InputDecoration(labelText: 'Product Name', hintText: _productName),
-                        onChanged: (value) {
-                          _productName = value;
-                        },
-                      )
-                    : Text(
-                        'Product Name: $_productName',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                Text(
+                  'Product Name: $_productName',
+                  style: TextStyle(fontSize: 18),
+                ),
                 SizedBox(height: 10),
                 Text(
                   'Product Quantity: $productQuantity',
                   style: TextStyle(fontSize: 18),
                 ),
-                SizedBox(height: 20),
-                if (_isEditing) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          addProduct(context,widget.storeId, widget.productId);
-                        },
-                        child: Icon(Icons.add),
-                      ),
-                      SizedBox(width: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          deleteProduct(widget.storeId, widget.productId);
-                        },
-                        child: Icon(Icons.remove),
-                      ),
-                    ],
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 20),
+                        if (_isEditing) ...[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  addProduct(context, widget.storeId, widget.productId);
+                                },
+                                child: Icon(Icons.add),
+                              ),
+                              SizedBox(width: 20),
+                              ElevatedButton(
+                                onPressed: () {
+                                  deleteProduct(widget.storeId, widget.productId);
+                                },
+                                child: Icon(Icons.remove),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-                ],
+                ),
+                SizedBox(height: 20),
+                if (_imageLoaded) // Mostrar la imagen si está cargada
+                  Container(
+                    constraints: BoxConstraints(
+                      maxHeight: 300,
+                      maxWidth: MediaQuery.of(context).size.width,
+                    ),
+                    child: Center(
+                      child: Image.memory(
+                        _imageBytes,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
               ],
             ),
           );

@@ -1,11 +1,137 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+// import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
-import 'dart:typed_data';
+// import 'dart:typed_data';
 // Función para comprimir la imagen
+
+Future<int> fetchNotificationCount() async {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser == null) return 0;
+
+  final userReference = FirebaseFirestore.instance.doc('users/${currentUser.uid}');
+
+  final notificationsCollection = FirebaseFirestore.instance.collection('requests');
+
+  final notificationsSnapshot = await notificationsCollection
+      .where('receiver', isEqualTo: userReference)
+      .get();
+
+  final notificationDocs = notificationsSnapshot.docs;
+
+  return notificationDocs.length;
+}
+
+
+
+
+class NotificationInfo {
+  final String requestId;
+  final String type;
+  final String senderId;
+  final String? storeId;
+  final String? storeName;
+  final String? senderEmail;
+
+  NotificationInfo({
+    required this.requestId,
+    required this.type,
+    required this.senderId,
+    this.storeId,
+    this.storeName,
+    this.senderEmail,
+  });
+}
+
+Future<List<NotificationInfo>> fetchNotificationsInfo() async {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser == null) return [];
+
+  final userReference = FirebaseFirestore.instance.doc('users/${currentUser.uid}');
+  final notificationsCollection = FirebaseFirestore.instance.collection('requests');
+
+  final notificationsSnapshot = await notificationsCollection
+      .where('receiver', isEqualTo: userReference)
+      .get();
+
+  final notificationDocs = notificationsSnapshot.docs;
+
+  final List<NotificationInfo> notificationsInfo = [];
+
+  for (var doc in notificationDocs) {
+    final requestId = doc.id;
+    final senderRef = doc['sender'] as DocumentReference;
+    final storeRef = doc['store'] as DocumentReference;
+    final type = doc['type']; // Obtener el tipo de notificación
+    final senderId = senderRef.id;
+    final storeId = storeRef.id;
+
+    // Obtener el nombre de la tienda
+    final storeSnapshot = await FirebaseFirestore.instance.collection('stores').doc(storeId).get();
+    final storeName = storeSnapshot['name'];
+
+    // Obtener el correo electrónico del remitente
+    String? senderEmail;
+    // ignore: unnecessary_null_comparison
+    if (senderId != null) {
+      final senderSnapshot = await FirebaseFirestore.instance.collection('users').doc(senderId).get();
+      senderEmail = senderSnapshot['email'];
+    }
+
+    final notificationInfo = NotificationInfo(
+      requestId: requestId,
+      type: type,
+      senderId: senderId,
+      storeId: storeId,
+      storeName: storeName,
+      senderEmail: senderEmail,
+    );
+
+    notificationsInfo.add(notificationInfo);
+  }
+
+  return notificationsInfo;
+}
+
+
+Future<void> acceptInvitation(NotificationInfo requestInfo) async {
+  try {
+    final requestRef = FirebaseFirestore.instance.collection('requests').doc(requestInfo.requestId);
+    
+    await requestRef.update({'status': 'accepted'}); // Actualiza el estado de la solicitud a "aceptada"
+    
+    // Obtén la referencia a la tienda usando la ID de la tienda
+    final storeRef = FirebaseFirestore.instance.collection('stores').doc(requestInfo.storeId);
+
+    // Obtiene la ID del usuario actualmente autenticado
+    final currentUserID = FirebaseAuth.instance.currentUser!.uid;
+
+    // Actualiza el documento del usuario para agregar la referencia de la tienda
+    await FirebaseFirestore.instance.collection('users').doc(currentUserID).update({
+      'stores': FieldValue.arrayUnion([storeRef]),
+    });
+
+    print('Invitation accepted successfully.');
+  } catch (e) {
+    print('Error accepting invitation: $e');
+    throw Exception('Error accepting invitation: $e');
+  }
+}
+
+
+Future<void> deleteInvitation(NotificationInfo requestInfo) async {
+  try {
+    final requestRef = FirebaseFirestore.instance.collection('requests').doc(requestInfo.requestId);
+    await requestRef.delete(); // Elimina la solicitud de invitación
+    print('Invitation deleted successfully.');
+  } catch (e) {
+    print('Error deleting invitation: $e');
+    throw Exception('Error deleting invitation: $e');
+  }
+}
 
 Future<File> compressImage(File image) async {
   // return image;
@@ -20,7 +146,7 @@ Future<File> compressImage(File image) async {
     final result = await FlutterImageCompress.compressAndGetFile(
       image.absolute.path,
       outPath,
-      quality: 5, // Ajusta la calidad de compresión según tus necesidades
+      quality: 10, // Ajusta la calidad de compresión según tus necesidades
     );
 
     if (result != null) {
@@ -205,4 +331,34 @@ Future<void> removeProduct(String storeId, String productId) async {
 
   // Eliminamos el producto de la base de datos
   await productRef.delete();
+}
+
+Future<void> createInvitation(String receiverId, String storeName, String type, String senderEmail) async {
+  try {
+    // Obtener el usuario actualmente autenticado
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      throw Exception('User is not logged in');
+    }
+
+    // Generar una nueva ID para la invitación
+    String invitationId = FirebaseFirestore.instance.collection('requests').doc().id;
+
+    // Crear un mapa con los datos de la invitación
+    Map<String, dynamic> invitationData = {
+      'sender': currentUser.uid, // ID del remitente
+      'receiver': receiverId, // ID del receptor
+      'storeName': storeName,
+      'type': type,
+      'senderEmail': senderEmail,
+    };
+
+    // Guardar la invitación en Firestore
+    await FirebaseFirestore.instance.collection('requests').doc(invitationId).set(invitationData);
+
+    print('Invitation created successfully.');
+  } catch (error) {
+    print('Error creating invitation: $error');
+    throw Exception('Error creating invitation: $error');
+  }
 }

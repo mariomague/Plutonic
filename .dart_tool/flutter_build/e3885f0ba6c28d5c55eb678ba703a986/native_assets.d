@@ -1,0 +1,1 @@
+ C:\\Mario\\Clase\\Proyecto\\Plutonic\\.dart_tool\\flutter_build\\e3885f0ba6c28d5c55eb678ba703a986\\native_assets.yaml: 

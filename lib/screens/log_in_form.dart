@@ -3,9 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 
 class LogInForm extends StatefulWidget {
-  final VoidCallback? onLogin;
 
-  const LogInForm({Key? key, this.onLogin}) : super(key: key);
+  const LogInForm({Key? key}) : super(key: key);
 
   @override
   _LogInFormState createState() => _LogInFormState();
@@ -27,7 +26,6 @@ class _LogInFormState extends State<LogInForm> {
           email: _emailController.text,
           password: _passwordController.text,
         );
-        widget.onLogin?.call(); // Llama a la función proporcionada por el padre para actualizar la página
         Navigator.popUntil(context, ModalRoute.withName('/')); // Cierra la pantalla de inicio de sesión después de iniciar sesión correctamente y regresa al inicio
       } catch (e) {
         String message;
