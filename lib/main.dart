@@ -1,27 +1,42 @@
+// C:\Users\smmg\AppData\Local\Pub\Cache\bin
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/group_screen.dart'; 
 import 'screens/account_screen.dart';
 import 'firebase_options.dart';
 import 'screens/barcode_scanner_view_screen.dart';
 import 'product_utils.dart';
+import 'dart:async'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  // Set system UI mode and overlay style
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent, // Set status bar color to transparent
+    statusBarIconBrightness: Brightness.dark, // Make status bar icons dark
+    systemNavigationBarColor: Colors.white, // Set system navigation bar color to white
+    systemNavigationBarIconBrightness: Brightness.light, // Make system navigation bar icons light (grey)
+  ));
+  
   runApp(const MyApp());
 }
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: HomeScreen(),
     );
   }
 }
@@ -30,6 +45,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -38,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   int _currentIndex = 0;
   int _notificationCount = 0;
   final PageController _pageController = PageController(initialPage: 0);
-  bool _isPageChanging = false; // Bandera para indicar si la página está cambiando
+  bool _isPageChanging = false;
 
   @override
   void initState() {
@@ -50,14 +66,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   void _handleTabSelection() {
     if (!_isPageChanging) {
-      setState(() {
-        _currentIndex = _tabController.index;
-        _pageController.animateToPage(
-          _currentIndex,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.ease,
-        );
-      });
+      _isPageChanging = true;
+      _currentIndex = _tabController.index;
+      _pageController.animateToPage(
+        _currentIndex,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      ).then((_) => _isPageChanging = false);
     }
   }
 
@@ -72,66 +87,76 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // Hacer el fondo transparente
-        elevation: 0, // Eliminar la sombra debajo de la AppBar
-        automaticallyImplyLeading: false, // Para ocultar el botón de retroceso
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.purple[200], // Hacer el indicador de tab transparente
-          tabs: [
-            const Tab(icon: Icon(Icons.barcode_scanner)),
-            const Tab(icon: Icon(Icons.group)),
-            Tab(
-              icon: Stack(
-                children: [
-                  const Icon(Icons.account_circle),
-                  if (_notificationCount > 0)
-                    Positioned(
-                      right: -1,
-                      top: -2,
-                      child: Container(
-                        padding: const EdgeInsets.all(0),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          '$_notificationCount',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+        backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0), // Set the preferred height for the TabBar
+          child: TabBar(
+            controller: _tabController,
+            indicatorColor: Colors.purple[200],
+            onTap: (index) {
+              if (!_isPageChanging) {
+                _isPageChanging = true;
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.ease,
+                ).then((_) => _isPageChanging = false);
+              }
+            },
+            tabs: [
+              const Tab(icon: Icon(Icons.barcode_reader)),
+              const Tab(icon: Icon(Icons.group)),
+              Tab(
+                icon: Stack(
+                  clipBehavior: Clip.none, // Añade esta línea
+                  children: [
+                    const Icon(Icons.account_circle),
+                    if (_notificationCount > 0)
+                      Positioned(
+                        right: -4,
+                        top: -5,
+                        child: Container(
+                          padding: const EdgeInsets.all(1),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '$_notificationCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       body: PageView(
         controller: _pageController,
         onPageChanged: (int index) {
-          setState(() {
-            _currentIndex = index;
-            _isPageChanging = true; // Establecer la bandera como verdadera cuando cambia la página
-          });
-          _tabController.animateTo(index); // Seleccionar el ícono correspondiente al cambiar de página
-          _fetchNotificationCount();
+          if (!_isPageChanging) {
+            _isPageChanging = true;
+            _tabController.animateTo(index);
+            setState(() {
+              _currentIndex = index;
+            });
+            _fetchNotificationCount().then((_) => _isPageChanging = false);
+          }
         },
         children: [
-          BarcodeScannerViewScreen(),
+          const BarcodeScannerViewScreen(),
           const GroupScreen(),
           AccountScreen(
-            onLogout: () {
-              _fetchNotificationCount();
-              setState(() {});
-            },
-            onLogin: () {
-              _fetchNotificationCount();
-              setState(() {});
-            },
+            onLogout: _fetchNotificationCount,
+            onLogin: _fetchNotificationCount,
           ),
         ],
       ),

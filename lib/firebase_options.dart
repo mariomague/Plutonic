@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -43,6 +40,14 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyCYVUwJXWvG1bEQASScRIn97k0ju8cUVz4',
+    appId: '1:318769371927:android:4a57c5ac2160c903b9b552',
+    messagingSenderId: '318769371927',
+    projectId: 'plutonic-0000',
+    storageBucket: 'plutonic-0000.appspot.com',
+  );
+
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyC_8gtO6iNjK04WdMb045HIFmcyhBOQt38',
     appId: '1:318769371927:web:df5802126920fd43b9b552',
@@ -53,12 +58,13 @@ class DefaultFirebaseOptions {
     measurementId: 'G-989Q3D485K',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCYVUwJXWvG1bEQASScRIn97k0ju8cUVz4',
-    appId: '1:318769371927:android:4a57c5ac2160c903b9b552',
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyCzsm8EMlfpIrxjHYgFb5mseaw8c0cYl78',
+    appId: '1:318769371927:ios:6999dc432f7f92b7b9b552',
     messagingSenderId: '318769371927',
     projectId: 'plutonic-0000',
     storageBucket: 'plutonic-0000.appspot.com',
+    iosBundleId: 'com.example.plutonic',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -70,12 +76,14 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.plutonic',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCzsm8EMlfpIrxjHYgFb5mseaw8c0cYl78',
-    appId: '1:318769371927:ios:41e00faa212d9ba0b9b552',
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyC_8gtO6iNjK04WdMb045HIFmcyhBOQt38',
+    appId: '1:318769371927:web:f4ecd1cd479f79b3b9b552',
     messagingSenderId: '318769371927',
     projectId: 'plutonic-0000',
+    authDomain: 'plutonic-0000.firebaseapp.com',
     storageBucket: 'plutonic-0000.appspot.com',
-    iosBundleId: 'com.example.plutonic.RunnerTests',
+    measurementId: 'G-641N2SCSZK',
   );
+
 }

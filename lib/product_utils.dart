@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new, prefer_const_constructors, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -114,9 +116,9 @@ Future<void> acceptInvitation(NotificationInfo requestInfo) async {
       'stores': FieldValue.arrayUnion([storeRef]),
     });
 
-    print('Invitation accepted successfully.');
+    // print('Invitation accepted successfully.');
   } catch (e) {
-    print('Error accepting invitation: $e');
+    // print('Error accepting invitation: $e');
     throw Exception('Error accepting invitation: $e');
   }
 }
@@ -126,9 +128,9 @@ Future<void> deleteInvitation(NotificationInfo requestInfo) async {
   try {
     final requestRef = FirebaseFirestore.instance.collection('requests').doc(requestInfo.requestId);
     await requestRef.delete(); // Elimina la solicitud de invitación
-    print('Invitation deleted successfully.');
+    // print('Invitation deleted successfully.');
   } catch (e) {
-    print('Error deleting invitation: $e');
+    // print('Error deleting invitation: $e');
     throw Exception('Error deleting invitation: $e');
   }
 }
@@ -169,7 +171,10 @@ Future<File> compressImage(File image) async {
 
 
 class AddProductDialog extends StatefulWidget {
+  const AddProductDialog({Key? key}) : super(key: key);
+
   @override
+  // ignore: library_private_types_in_public_api
   _AddProductDialogState createState() => _AddProductDialogState();
 }
 
@@ -180,14 +185,14 @@ class _AddProductDialogState extends State<AddProductDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Nuevo producto'),
+      title: const Text('New Product'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _productNameController,
             decoration: const InputDecoration(
-              hintText: 'Nombre del producto',
+              hintText: 'Product Name: e.g. Apple',
             ),
           ),
           const SizedBox(height: 16),
@@ -197,7 +202,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _captureImage,
-                    child: const Text('Capturar imagen'),
+                    child: const Text('Take Picture'),
                   ),
                 ),
         ],
@@ -207,7 +212,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
           onPressed: () {
             Navigator.of(context).pop(); // Cerrar el diálogo sin agregar el producto
           },
-          child: const Text('Cancelar'),
+          child: const Text('Cancel'),
         ),
         TextButton(
           onPressed: () {
@@ -217,7 +222,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
             };
             Navigator.of(context).pop(result); // Devolver el nombre del producto ingresado y la imagen capturada
           },
-          child: const Text('Agregar'),
+          child: const Text('Add'),
         ),
       ],
     );
@@ -254,6 +259,7 @@ if (existingProduct.exists) {
   // Si el producto no existe, lo agregamos con cantidad 1 (y nombre si se proporciona)
   final dataToAdd = <String, dynamic>{'quantity': 1};
   if (productName != null) {
+    // En caso de que se proporcione el nombre del producto, lo agregamos a los datos (esto para debuggear fácilmente)
     dataToAdd['name'] = productName;
   } else {
     // Si no se proporciona el nombre del producto, mostramos un diálogo para que el usuario lo ingrese
@@ -286,7 +292,9 @@ if (existingProduct.exists) {
   }
 
   // Añadir el nuevo producto a Firestore
+  if (productName != null && dataToAdd['name'].isNotEmpty) {
   await productRef.set(dataToAdd);
+  }
 }
 
 }
@@ -333,6 +341,23 @@ Future<void> removeProduct(String storeId, String productId) async {
   await productRef.delete();
 }
 
+Future<void> updateProductImage(String storeId, String productId, File newImageFile) async {
+  final productRef = FirebaseFirestore.instance.collection('stores/$storeId/products').doc(productId);
+
+  // Comprimir la imagen antes de subirla (opcional)
+  final compressedImage = await compressImage(newImageFile);
+
+  // Convertir la imagen comprimida a bytes
+  final imageBytes = await compressedImage.readAsBytes();
+
+  // Verificamos si el producto existe antes de intentar actualizar su imagen
+  final existingProduct = await productRef.get();
+  if (existingProduct.exists) {
+    // Actualizamos la imagen del producto
+    await productRef.update({'image': imageBytes});
+  }
+}
+
 Future<void> createInvitation(String receiverId, String storeName, String type, String senderEmail) async {
   try {
     // Obtener el usuario actualmente autenticado
@@ -356,9 +381,9 @@ Future<void> createInvitation(String receiverId, String storeName, String type, 
     // Guardar la invitación en Firestore
     await FirebaseFirestore.instance.collection('requests').doc(invitationId).set(invitationData);
 
-    print('Invitation created successfully.');
+    // print('Invitation created successfully.');
   } catch (error) {
-    print('Error creating invitation: $error');
+    // print('Error creating invitation: $error');
     throw Exception('Error creating invitation: $error');
   }
 }

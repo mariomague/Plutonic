@@ -5,23 +5,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../vision_detector_views/barcode_scanner_view.dart';
 import 'product_details_screen.dart';
 import 'dart:typed_data';
-import 'package:animated_widgets/animated_widgets.dart';
 
 class BarcodeScannerViewScreen extends StatefulWidget {
+  const BarcodeScannerViewScreen({Key? key}) : super(key: key);
+
   @override
-  _BarcodeScannerViewScreenState createState() => _BarcodeScannerViewScreenState();
+  // ignore: library_private_types_in_public_api
+  _BarcodeScannerViewScreenState createState() =>
+      _BarcodeScannerViewScreenState();
 }
 
 class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
   String? selectedStoreId;
-  bool _display = false;
+  final bool _display = true;
 
   @override
   void initState() {
     super.initState();
     _clearUserDataIfBadUser();
     _getStoreIdFromPrefs();
-    _display = true;
   }
 
   Future<void> _clearUserDataIfBadUser() async {
@@ -32,7 +34,7 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
       prefs.remove('userId');
       prefs.remove('currentStore');
       if (user != null) {
-        prefs.setString('userId', user.uid);        
+        prefs.setString('userId', user.uid);
       }
       setState(() {
         selectedStoreId = null;
@@ -49,19 +51,19 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
   @override
   Widget build(BuildContext context) {
     if (FirebaseAuth.instance.currentUser == null) {
-      return Center(child: Text('Sign in to continue'));
+      return const Center(child: Text('Sign in to continue'));
     } else if (selectedStoreId == null) {
-      return Center(child: Text('Select a store to continue'));
+      return const Center(child: Text('Select a store to continue'));
     }
 
-    // ignore: unused_local_variable
-    final storeRef = FirebaseFirestore.instance.collection('stores').doc(selectedStoreId);
+    final storeRef =
+        FirebaseFirestore.instance.collection('stores').doc(selectedStoreId);
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: Colors.purple[200], // Morado claro
+            backgroundColor: Colors.purple[300], // Ajusta el color de fondo
             expandedHeight: 200.0,
             flexibleSpace: FlexibleSpaceBar(
               title: StreamBuilder<DocumentSnapshot>(
@@ -74,103 +76,107 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
                   final storeName = storeData['name'] ?? 'Unnamed Store';
                   return Text(
                     storeName,
-                    style: const TextStyle(fontSize: 18), textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold), // Modifica el estilo del texto
+                    textAlign: TextAlign.center,
                   );
                 },
               ),
-              background: Image.network(
-                'https://via.placeholder.com/500x200', // Placeholder de imagen del almacén
-                fit: BoxFit.cover,
-              ),
-            ),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.camera_alt),
-                onPressed: () {
-                  // Implementar la funcionalidad de establecer una foto del almacén
+              background: StreamBuilder<DocumentSnapshot>(
+                stream: storeRef.snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError || !snapshot.hasData) {
+                    return Container(
+                      color: Colors.grey[300], // Default background color
+                    );
+                  }
+                  final storeData = snapshot.data!.data() as Map<String, dynamic>;
+                  final imageList = storeData['image'] as List<dynamic>?;
+                  return _buildImageWidget(imageList);
                 },
               ),
-            ],
+            ),
           ),
           SliverPadding(
-            padding: EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
             sliver: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('stores/$selectedStoreId/products').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('stores/$selectedStoreId/products')
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return SliverToBoxAdapter(child: Center(child: Text('Error: ${snapshot.error}')));
+                  return SliverToBoxAdapter(
+                      child: Center(child: Text('Error: ${snapshot.error}')));
                 }
 
                 if (!snapshot.hasData) {
-                  return SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
+                  return const SliverToBoxAdapter(
+                      child: Center(child: CircularProgressIndicator()));
                 }
 
-                List<Widget> productsWidgets = [];
+                final products = snapshot.data!.docs;
+                products.sort((a, b) => a['quantity'].compareTo(b['quantity']));
+
+                List<Widget> productWidgets = [];
                 List<Widget> outOfStockWidgets = [];
 
-                final products = snapshot.data!.docs;
-                products.sort((a, b) => a['quantity'].compareTo(b['quantity'])); // Ordena por cantidad
-
                 for (var doc in products) {
-                  final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-                  final productName = data.containsKey('name') ? data['name'] : 'Unnamed Product';
+                  final Map<String, dynamic> data =
+                      doc.data() as Map<String, dynamic>;
+                  final productName =
+                      data.containsKey('name') ? data['name'] : 'Unnamed Product';
                   final productQuantity = data['quantity'] ?? 0;
                   final imageList = data['image'] as List<dynamic>?;
 
                   Widget leadingWidget;
                   if (imageList != null && imageList.isNotEmpty) {
-                    final _imageBytes = Uint8List.fromList(imageList.cast<int>());
-                    leadingWidget = Image.memory(_imageBytes, width: 50, height: 50, fit: BoxFit.cover);
+                    final imageBytes =
+                        Uint8List.fromList(imageList.cast<int>());
+                    leadingWidget = Image.memory(imageBytes,
+                        width: 50, height: 50, fit: BoxFit.cover);
                   } else {
-                    leadingWidget = Icon(Icons.image, size: 50);
+                    leadingWidget = const Icon(Icons.image, size: 50);
                   }
 
-                  Widget productWidget = OpacityAnimatedWidget.tween(
-                    opacityEnabled: 1,
-                    opacityDisabled: 0,
-                    enabled: _display,
-                    duration: Duration(milliseconds: 500),
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            spreadRadius: 5,
-                            blurRadius: 10,
-                            offset: Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.symmetric(vertical: 10),
-                        leading: Container(
-                          padding: EdgeInsets.all(5),
-                          margin: EdgeInsets.only(left: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.purple[200], // Morado claro
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: leadingWidget,
-                        ),
-                        title: Text(
-                          productName,
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          'Quantity: $productQuantity',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductDetailsScreen(productId: doc.id, storeId: selectedStoreId!),
+                  Widget productWidget = Opacity(
+                    opacity: _display ? 1.0 : 0.0,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: Card(
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                          leading: Container(
+                            padding: const EdgeInsets.all(5),
+                            margin: const EdgeInsets.only(left: 10),
+                            decoration: BoxDecoration(
+                              color: productQuantity == 0 ? Colors.red[200] : Colors.purple[200],
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                          );
-                        },
+                            child: leadingWidget,
+                          ),
+                          title: Text(
+                            productName,
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Roboto'),
+                          ),
+                          subtitle: Text(
+                            'Quantity: $productQuantity',
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.grey, fontFamily: 'Roboto'),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductDetailsScreen(
+                                  productId: doc.id,
+                                  storeId: selectedStoreId!,
+                                  heroTag: '${doc.id}_$selectedStoreId!',
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   );
@@ -178,34 +184,39 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
                   if (productQuantity == 0) {
                     outOfStockWidgets.add(productWidget);
                   } else {
-                    productsWidgets.add(productWidget);
+                    productWidgets.add(productWidget);
                   }
                 }
 
                 return SliverList(
                   delegate: SliverChildListDelegate([
+                    if (outOfStockWidgets.isNotEmpty)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(left: 20, bottom: 10),
+                            child: Text(
+                              'Out Of Stock:',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: outOfStockWidgets,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: outOfStockWidgets.isNotEmpty
-                          ? [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20, bottom: 10),
-                                child: Text('Out Of:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              ),
-                              Container(
-                                color: Colors.grey[200],
-                                child: Column(
-                                  children: outOfStockWidgets,
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20, bottom: 10),
-                                child: Text('Products on hand:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              ),
-                              ...productsWidgets,
-                            ]
-                          : productsWidgets,
+                      children: productWidgets,
                     ),
                   ]),
                 );
@@ -219,32 +230,47 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           FloatingActionButton(
+            heroTag: "addButton",
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BarcodeScannerView(isAddingProduct: true),
+                  builder: (context) =>
+                      const BarcodeScannerView(isAddingProduct: true),
                 ),
               );
             },
-            child: Icon(Icons.add),
-            backgroundColor: Colors.purple[200], // Morado claro
+            backgroundColor: Colors.purple[300], // Morado menos oscuro
+            child: const Icon(Icons.add, color: Colors.white), // Blanco
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           FloatingActionButton(
+            heroTag: "removeButton",
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BarcodeScannerView(isAddingProduct: false),
+                  builder: (context) => const BarcodeScannerView(isAddingProduct: false),
                 ),
               );
             },
-            child: Icon(Icons.remove),
-            backgroundColor: Colors.purple[200], // Morado claro
+            backgroundColor: Colors.red[300], // Morado menos oscuro
+            child: const Icon(Icons.remove, color: Colors.white), // Blanco
           ),
         ],
       ),
+    );
+  }
+}
+
+Widget _buildImageWidget(List<dynamic>? imageList) {
+  if (imageList != null && imageList.isNotEmpty) {
+    final imageBytes = Uint8List.fromList(imageList.cast<int>());
+    return Image.memory(imageBytes, fit: BoxFit.cover);
+  } else {
+    return Image.network(
+      'https://via.placeholder.com/500x200', // Imagen de marcador de posición
+      fit: BoxFit.cover,
     );
   }
 }

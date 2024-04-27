@@ -1,4 +1,4 @@
-name: Plutonic
+name: plutonic
 description: Storing App.
 
 # The following line prevents the package from being accidentally published to
@@ -14,6 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   image_picker: ^1.0.7
+  image: ^4.1.7
   animated_widgets: ^1.1.0
   camera: ^0.10.5+3
   path: ^1.8.2

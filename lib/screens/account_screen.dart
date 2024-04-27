@@ -11,10 +11,12 @@ class AccountScreen extends StatefulWidget {
   const AccountScreen({Key? key, this.onLogout, this.onLogin}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _AccountScreenState createState() => _AccountScreenState();
 }
 
-class _AccountScreenState extends State<AccountScreen> with SingleTickerProviderStateMixin {
+class _AccountScreenState extends State<AccountScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -62,7 +64,8 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       children: [
         _buildAccountInfo('Email', user?.email ?? 'You are not logged in.'),
         const SizedBox(height: 20),
-        ElevatedButton(
+        _buildButton(
+          text: user != null ? 'Log Out' : 'Log In',
           onPressed: () async {
             if (user != null) {
               await FirebaseAuth.instance.signOut();
@@ -73,61 +76,44 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
               _navigateToForm(context, const LogInForm());
             }
           },
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ), 
-            backgroundColor: Theme.of(context).primaryColor,
-            padding: const EdgeInsets.symmetric(vertical: 15),
-          ),
-          child: Text(
-            user != null ? 'Log Out' : 'Log In',
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
         ),
         const SizedBox(height: 10),
         if (user == null)
-          ElevatedButton(
+          _buildButton(
+            text: 'Sign Up',
             onPressed: () => _navigateToForm(context, const RegisterForm()),
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ), 
-              backgroundColor: Theme.of(context).primaryColor,
-              padding: const EdgeInsets.symmetric(vertical: 15),
-            ),
-            child: const Text(
-              'Sign Up',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-              ),
-            ),
           ),
         const SizedBox(height: 10),
-        ElevatedButton(
+        _buildButton(
+          text: 'Notifications',
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsScreen()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NotificationsScreen()));
           },
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ), 
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            padding: const EdgeInsets.symmetric(vertical: 15),
-          ),
-          child: const Text(
-            'Notifications',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
+          color: Theme.of(context).colorScheme.secondary,
         ),
       ],
+    );
+  }
+
+  Widget _buildButton({required String text, required VoidCallback onPressed, Color? color}) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ), backgroundColor: color ?? Colors.purple[300], // Usa Colors.purple[300] si no se proporciona un color
+        padding: const EdgeInsets.symmetric(vertical: 15),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 18,
+          color: Colors.white, // El texto del botón siempre es blanco para contrastar con el color del botón
+        ),
+      ),
     );
   }
 
@@ -135,7 +121,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Colors.grey[800], // Usa Colors.red[300] para el fondo del contenedor
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -143,11 +129,11 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 18),
+            style: const TextStyle(fontSize: 18, color: Colors.white), // El texto de la etiqueta es blanco para contrastar con el fondo rojo
           ),
           Text(
             value,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white), // El texto del valor es blanco para contrastar con el fondo rojo
           ),
         ],
       ),
@@ -155,7 +141,8 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
   }
 
   void _navigateToForm(BuildContext context, Widget form) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => form)).then((_) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => form))
+        .then((_) {
       _controller.reset();
       _controller.forward();
       widget.onLogin?.call();

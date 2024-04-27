@@ -1,0 +1,32 @@
+{
+    "cmake.configureOnOpen": true,
+    "cSpell.words": [
+        "agregamos",
+        "ARGB",
+        "barcodes",
+        "bgra",
+        "cantidad",
+        "caso",
+        "datos",
+        "debuggear",
+        "diálogo",
+        "esto",
+        "existe",
+        "fácilmente",
+        "firestore",
+        "Firestore",
+        "ingrese",
+        "mlkit",
+        "mostramos",
+        "nombre",
+        "prefs",
+        "producto",
+        "proporciona",
+        "proporcione",
+        "splitted",
+        "usuario",
+        "Verificar",
+        "vsync"
+    ],
+    "cSpell.language": "en,es,lorem,en-GB,en-US"
+}

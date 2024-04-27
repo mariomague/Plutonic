@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -5,6 +7,7 @@ class LogInForm extends StatefulWidget {
   const LogInForm({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _LogInFormState createState() => _LogInFormState();
 }
 
@@ -59,7 +62,7 @@ class _LogInFormState extends State<LogInForm> {
             children: <Widget>[
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.email),
@@ -78,8 +81,8 @@ class _LogInFormState extends State<LogInForm> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(_passwordVisible ? Icons.visibility : Icons.visibility_off),
                     onPressed: () {

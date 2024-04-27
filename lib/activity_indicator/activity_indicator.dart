@@ -21,6 +21,7 @@ class Toast {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+        // ignore: deprecated_member_use
         return WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog(
@@ -28,7 +29,8 @@ class Toast {
                   borderRadius: BorderRadius.all(Radius.circular(8.0))),
               backgroundColor: Colors.black87,
               content: LoadingIndicator(text: text),
-            ));
+            )
+          );
       },
     );
   }

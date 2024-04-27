@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
@@ -8,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class BarcodeScannerView extends StatefulWidget {
   final bool isAddingProduct;
 
-  BarcodeScannerView({required this.isAddingProduct});
+  const BarcodeScannerView({Key? key, required this.isAddingProduct}) : super(key: key);
 
   @override
   State<BarcodeScannerView> createState() => _BarcodeScannerViewState();
@@ -51,8 +53,9 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     _isBusy = true;
 
     final barcodes = await _barcodeScanner.processImage(inputImage);
+    final barcodes2 = await _barcodeScanner.processImage(inputImage);
 
-    if (barcodes.isNotEmpty) {
+    if (barcodes.isNotEmpty && barcodes2.isNotEmpty && barcodes[0].rawValue == barcodes2[0].rawValue) {
       _canProcess = false;
       final prefs = await SharedPreferences.getInstance();
       var storeId = prefs.getString('currentStore');
@@ -66,7 +69,6 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
         _canProcess = true;
       } else {
         await prefs.setString('lastScannedProductId', productId!);
-
         if (widget.isAddingProduct) {
           addProduct(context, storeId, productId);
           ScaffoldMessenger.of(context).showSnackBar(

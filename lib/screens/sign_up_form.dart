@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +10,7 @@ class RegisterForm extends StatefulWidget {
   const RegisterForm({Key? key, this.onRegister}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _RegisterFormState createState() => _RegisterFormState();
 }
 
@@ -23,7 +26,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Future<void> _register(BuildContext context) async {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Passwords do not match')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
         return;
       }
 
@@ -67,8 +70,8 @@ class _RegisterFormState extends State<RegisterForm> {
       // Referencia a la colección de usuarios
       CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
       
-      print(usersCollection);
-      print(FirebaseFirestore.instance.collection('users'));
+      // print(usersCollection);
+      // print(FirebaseFirestore.instance.collection('users'));
 
 
       // Guardar información del usuario en Firestore
@@ -77,9 +80,9 @@ class _RegisterFormState extends State<RegisterForm> {
         'stores': [], // Array vacío para almacenar los IDs de los almacenes asociados
       });
       
-      print('Información del usuario guardada en Firestore');
+      // print('Información del usuario guardada en Firestore');
     } catch (e) {
-      print('Error al guardar información del usuario en Firestore: $e');
+      // print('Error al guardar información del usuario en Firestore: $e');
     }
   }
 
@@ -87,7 +90,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register'),
+        title: const Text('Register'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -99,7 +102,7 @@ class _RegisterFormState extends State<RegisterForm> {
               children: <Widget>[
                 TextFormField(
                   controller: _emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
@@ -111,13 +114,13 @@ class _RegisterFormState extends State<RegisterForm> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(_passwordVisible ? Icons.visibility : Icons.visibility_off),
                       onPressed: () {
@@ -135,13 +138,13 @@ class _RegisterFormState extends State<RegisterForm> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _confirmPasswordController,
                   decoration: InputDecoration(
                     labelText: 'Confirm Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(_confirmPasswordVisible ? Icons.visibility : Icons.visibility_off),
                       onPressed: () {
@@ -162,16 +165,16 @@ class _RegisterFormState extends State<RegisterForm> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _isLoading ? null : () => _register(context),
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: _isLoading
-                        ? CircularProgressIndicator(
+                        ? const CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           )
-                        : Text('Register'),
+                        : const Text('Register'),
                   ),
                 ),
               ],

@@ -2,23 +2,25 @@ import 'package:flutter/material.dart';
 import '../product_utils.dart';
 
 class NotificationsScreen extends StatelessWidget {
+  const NotificationsScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notifications'),
+        title: const Text('Notifications'),
       ),
       body: FutureBuilder<List<NotificationInfo>>(
         future: fetchNotificationsInfo(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             final notifications = snapshot.data ?? [];
             if (notifications.isEmpty) {
-              return Center(child: Text('No notifications available'));
+              return const Center(child: Text('No notifications available'));
             }
             return ListView.builder(
               itemCount: notifications.length,
@@ -37,13 +39,13 @@ class NotificationsScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.check),
+                        icon: const Icon(Icons.check),
                         onPressed: () {
                           _showConfirmationDialog(context, notification, true);
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.close),
+                        icon: const Icon(Icons.close),
                         onPressed: () {
                           _showConfirmationDialog(context, notification, false);
                         },
@@ -71,14 +73,15 @@ class NotificationsScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 if (accept) {
                   acceptInvitation(notification);
-                  // deleteInvitation(notification);
+                  deleteInvitation(notification);
+                  Navigator.pop(context);
                 } else {
                   deleteInvitation(notification);
                 }
