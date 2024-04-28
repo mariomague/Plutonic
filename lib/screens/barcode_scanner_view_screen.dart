@@ -53,7 +53,7 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
     if (FirebaseAuth.instance.currentUser == null) {
       return const Center(child: Text('Sign in to continue'));
     } else if (selectedStoreId == null) {
-      return const Center(child: Text('Select a store to continue'));
+      return const Center(child: Text('Select a warehouse to continue'));
     }
 
     final storeRef =
@@ -73,7 +73,7 @@ class _BarcodeScannerViewScreenState extends State<BarcodeScannerViewScreen> {
                     return Container();
                   }
                   final storeData = snapshot.data!.data() as Map<String, dynamic>;
-                  final storeName = storeData['name'] ?? 'Unnamed Store';
+                  final storeName = storeData['name'] ?? 'Unnamed Warehouse';
                   return Text(
                     storeName,
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold), // Modifica el estilo del texto
