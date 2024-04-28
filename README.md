@@ -1,30 +1,32 @@
-# plutonic
+# Plutonic: Aplicación para gestionar el almacenamiento local
 
-A new Flutter project.
+## ¿Qué es Plutonic?
 
-## Getting Started
+Plutonic es una aplicación móvil diseñada para gestionar el almacenamiento local, como la despensa de una casa. Permite crear diferentes unidades de almacenamiento ("almacenes") y manejar los productos que se encuentran en ellas. Es ideal para personas que viven con mucha gente o que necesitan controlar el inventario en almacenes.
 
-This project is a starting point for a Flutter application that follows the
-[simple app state management
-tutorial](https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple).
+## ¿Qué hace Plutonic?
 
-For help getting started with Flutter development, view the
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Facilita la gestión del almacenamiento: Plutonic permite crear, editar y eliminar almacenes, así como agregar, quitar y modificar productos dentro de ellos.
+- Sincronización en tiempo real: Las bases de datos están siempre sincronizadas, lo que garantiza que todos los usuarios tengan acceso a la información más reciente.
+- Versátil: Plutonic se puede usar en una variedad de entornos, desde casas hasta almacenes profesionales.
+- Fácil de usar: La aplicación está diseñada para ser lo más fácil e intuitiva posible, para que los usuarios puedan agregar o quitar productos rápidamente.
 
-## Assets
+## ¿Cómo funciona Plutonic?
 
-The `assets` directory houses images, fonts, and any other files you want to
-include with your application.
+Plutonic utiliza una base de datos noSQL (Firebase) para almacenar la información sobre los usuarios, almacenes y productos. La aplicación se conecta a la base de datos para obtener y actualizar la información, lo que garantiza que todos los usuarios tengan acceso a la misma información.
 
-The `assets/images` directory contains [resolution-aware
-images](https://flutter.dev/docs/development/ui/assets-and-images#resolution-aware).
+## ¿Quién puede usar Plutonic?
 
-## Localization
+Plutonic puede ser utilizada por cualquier persona que necesite gestionar el almacenamiento local. Es ideal para:
 
-This project generates localized messages based on arb files found in
-the `lib/src/localization` directory.
+- Familias que viven con mucha gente y necesitan tener un control sobre la comida y otros productos del hogar.
+- Compañeros de piso que comparten la despensa y otros espacios de almacenamiento.
+- Pequeñas empresas que necesitan controlar el inventario de sus productos.
 
-To support additional languages, please visit the tutorial on
-[Internationalizing Flutter
-apps](https://flutter.dev/docs/development/accessibility-and-localization/internationalization)
+## ¿Dónde puedo obtener Plutonic?
+
+Plutonic está disponible en los releases, pero se encuentra en un estado temprano de desarrollo. Hay cosas que todavia quedan por mejorar, como el LogIn, las cuentas, y las interfaces. 
+
+## ¿Cómo realizar una build de Plutonic?
+
+Para poder realizar una build de Plutonic, se debe tener Android Studio, el SDK de Flutter, entre otros requisitos, en caso de querer realizar una build propia, enviadme un mensaje.
