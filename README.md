@@ -25,7 +25,7 @@ Plutonic puede ser utilizada por cualquier persona que necesite gestionar el alm
 
 ## ¿Dónde puedo obtener Plutonic?
 
-Plutonic está disponible en los releases, pero se encuentra en un estado temprano de desarrollo. Hay cosas que todavia quedan por mejorar, como el LogIn, las cuentas, y las interfaces. 
+Plutonic está disponible en los releases, pero se encuentra en un estado temprano de desarrollo. Hay cosas que todavia quedan por mejorar, como el LogIn, las cuentas, y las interfaces, aparte de añadir un icono de app. 
 
 ## ¿Cómo realizar una build de Plutonic?
 
