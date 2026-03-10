@@ -30,3 +30,5 @@ Plutonic está disponible en los releases, pero se encuentra en un estado tempra
 ## ¿Cómo realizar una build de Plutonic?
 
 Para poder realizar una build de Plutonic, se debe tener Android Studio, el SDK de Flutter, entre otros requisitos, en caso de querer realizar una build propia, enviadme un mensaje.
+
+#### Video presentacion: https://youtu.be/myd39qtpGcU
